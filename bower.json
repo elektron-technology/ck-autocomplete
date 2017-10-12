@@ -1,0 +1,35 @@
+{
+  "name": "ck-autocomplete",
+  "version": "1.0.0",
+  "authors": [
+    "Jesus Bernal <Jesus.Bernal@checkit.net>"
+  ],
+  "description": "Angular autocomplete component",
+  "main": [
+    "dist/autocomplete.min.js",
+    "dist/autocomplete.min.css"
+  ],
+  "keywords": [
+    "angularjs",
+    "autocomplete"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angucomplete-alt": "^3.0.0",
+    "angular": "~1.5.11"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.5.11"
+  },
+  "resolutions": {
+    "angular": "~1.5.11"
+  }
+}

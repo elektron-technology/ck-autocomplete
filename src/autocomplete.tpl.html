@@ -1,0 +1,22 @@
+<span class="autocomplete" angucomplete-alt
+    ng-attr-id="{{ $ctrl.elementId || undefined }}"
+    placeholder="{{ $ctrl.placeholder }}"
+    minlength="{{ $ctrl.minLength }}"
+    text-searching="{{ $ctrl.textSearching }}"
+    text-no-results="{{ $ctrl.textNoResults }}"
+    template-url="directives/autocomplete/autocomplete.list.tpl.html"
+
+    remote-api-handler="$ctrl.search"
+    title-field="{{ $ctrl.displayField }}"
+    initial-value="$ctrl.initialDisplay"
+
+    input-class="{{$ctrl.listClass}}"
+    match-class="highlight"
+    disable-input="$ctrl.disableInput"
+
+    selected-object="$ctrl.onSelect"
+    input-changed="$ctrl.onChange"
+    clear-selected="{{ $ctrl.clearSelected }}"
+
+    focus-out="$ctrl.onFocusOut()">
+</span>

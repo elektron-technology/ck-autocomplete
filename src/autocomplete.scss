@@ -1,0 +1,53 @@
+$grey-dark: #5c666f;
+$grey-mid: #a3a9ac;
+$grey-light: #e6e6e6;
+$red: #f36c60;
+
+.autocomplete {
+  display: inline-block;
+
+  .angucomplete-dropdown {
+    font-size: 14px;
+    border-color: $grey-mid;
+    width: 100%;
+    cursor: auto;
+    padding: 0px;
+    overflow-y: auto;
+    max-height: 23em;
+  }
+
+  .angucomplete-row {
+    color: $grey-dark;
+    cursor: pointer;
+    padding: 6px;
+    margin-bottom: 0px;
+  }
+
+  .angucomplete-selected-row {
+    background-color:$grey-light;
+  }
+
+  .highlight {
+    font-weight: bold;
+    color: $red;
+  }
+
+  .angucomplete-searching {
+    text-align: center;
+    padding: 6px;
+  }
+
+  .angucomplete-loadmore {
+    font-style: italic;
+    font-size: 0.9em;
+    background-color: $grey-light;
+    text-align: center;
+    padding: 3px;
+    margin-bottom: 3px;
+    color: $grey-dark;
+    word-break: normal;
+  }
+}
+
+
+
