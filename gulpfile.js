@@ -46,7 +46,7 @@ gulp.task('build', ['clean-dist'], function(cb) {
     'uglify',
     'minify',
     'banner',
-    'clean-tmp',
+    'clean-temp',
     cb);
 });
 

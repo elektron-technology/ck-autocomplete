@@ -4,12 +4,13 @@
  * Licensed under MIT
  */
 (function () {
+  'use strict';
 
-  angular.module('ck-autocomplete', []).config(function ($compileProvider) {
+  angular.module('ck-autocomplete', ['angucomplete-alt']).config(function ($compileProvider) {
     // 1.5 components working with angular 1.6
     $compileProvider.preAssignBindingsEnabled(true);
   }).component('ckAutocomplete', {
-    templateUrl: 'directives/autocomplete/autocomplete.tpl.html',
+    templateUrl: 'autocomplete.tpl.html',
     controller: autocompleteController,
     bindings: {
       model: '=', // property to leave idField of the selection
@@ -36,9 +37,9 @@
 
   });
 
-  autocompleteController.$inject = ['$filter', '$scope', '$q', '$timeout'];
+  autocompleteController.$inject = ['$filter', '$scope', '$q', '$timeout', 'ckAutocompleteConfig'];
 
-  function autocompleteController($filter, $scope, $q, $timeout) {
+  function autocompleteController($filter, $scope, $q, $timeout, ckAutocompleteConfig) {
     var self = this;
 
     // set up default values
@@ -47,9 +48,10 @@
     self.displayField = self.displayField || 'name';
     self.idField = self.idField || 'id.entityId';
     self.minLength = self.minLength || 0;
-    self.textSearching = self.textSearching || 'Searching...';
-    self.textNoResults = self.textNoResults || 'No results';
-    $scope.textLoadMore = self.textLoadMore || 'Too many results. Please narrow search', self.disableInput = self.disableInput || false;
+    self.textSearching = self.textSearching || ckAutocompleteConfig.getSearchingText();
+    self.textNoResults = self.textNoResults || ckAutocompleteConfig.getNoResultsText();
+    $scope.textLoadMore = self.textLoadMore || ckAutocompleteConfig.getLoadMoreText();
+    self.disableInput = self.disableInput || false;
     self.clearOnNoSelection = self.clearOnNoSelection || false;
     self.returnObject = self.returnObject || false;
     self.listClass = self.listClass || 'form-control';
@@ -215,13 +217,62 @@
   }
 })();
 (function () {
+    'use strict';
+
+    angular.module('ck-autocomplete').factory('ckAutocompleteConfig', function () {
+        var textSearching = 'Searching...';
+        var textNoResults = 'No results';
+        var textLoadMore = 'Too many results. Please narrow search';
+
+        return {
+            setSearchingText: setSearchingText,
+            setNoResultsText: setNoResultsText,
+            setLoadMoreText: setLoadMoreText,
+            getSearchingText: getSearchingText,
+            getNoResultsText: getNoResultsText,
+            getLoadMoreText: getLoadMoreText
+        };
+
+        function setSearchingText(text) {
+            textSearching = text;
+        };
+
+        function setNoResultsText(text) {
+            textNoResults = text;
+        };
+
+        function setLoadMoreText(text) {
+            textLoadMore = text;
+        };
+
+        function getSearchingText() {
+            return textSearching;
+        };
+
+        function getNoResultsText() {
+            return textNoResults;
+        };
+
+        function getLoadMoreText() {
+            return textLoadMore;
+        };
+    });
+})();
+angular.module('ck-autocomplete').run(['$templateCache', function ($templateCache) {
+    $templateCache.put('autocomplete.list.tpl.html', "<div class=\"angucomplete-holder\" ng-class=\"{'angucomplete-dropdown-visible': showDropdown}\">\n    <input id=\"{{id}}_value\" name=\"{{inputName}}\" tabindex=\"{{fieldTabindex}}\"\n           ng-class=\"{'angucomplete-input-not-empty': notEmpty}\" ng-model=\"searchStr\" ng-disabled=\"disableInput\"\n           type=\"{{inputType}}\" placeholder=\"{{placeholder}}\" maxlength=\"{{maxlength}}\" ng-focus=\"onFocusHandler()\"\n           class=\"{{inputClass}}\" ng-focus=\"resetHideResults()\" ng-blur=\"hideResults($event)\" autocapitalize=\"off\"\n           autocorrect=\"off\" autocomplete=\"off\" ng-change=\"inputChangeHandler(searchStr)\"/>\n\n    <div id=\"{{id}}_dropdown\" class=\"angucomplete-dropdown\" ng-show=\"showDropdown\">\n\n        <div class=\"angucomplete-searching\" ng-show=\"searching\" ng-bind=\"textSearching\"></div>\n        <div class=\"angucomplete-searching\" ng-show=\"!searching && (!results || results.length == 0)\"\n             ng-bind=\"textNoResults\"></div>\n\n             <div class=\"angucomplete-loadmore\" ng-if=\"!searching && $parent.loadMore\" ng-bind=\"$parent.textLoadMore\">\n            </div>\n\n            <div class=\"angucomplete-loadmore\" ng-if=\"!searching && $parent.loadMore\" >\n                {{ $parent.textLoadMore}}\n            </div>\n\n        <div class=\"angucomplete-row\" ng-repeat=\"result in results\" ng-click=\"selectResult(result)\"\n             ng-mouseenter=\"hoverRow($index)\" ng-class=\"{'angucomplete-selected-row': $index == currentIndex}\">\n\n            <div ng-if=\"imageField\" class=\"angucomplete-image-holder\">\n                <img ng-if=\"result.image && result.image != ''\" ng-src=\"{{result.image}}\" class=\"angucomplete-image\"/>\n                <div ng-if=\"!result.image && result.image != ''\" class=\"angucomplete-image-default\"></div>\n            </div>\n\n            <div class=\"angucomplete-title\" ng-if=\"matchClass\" ng-bind-html=\"result.title\"></div>\n            <div class=\"angucomplete-title\" ng-if=\"!matchClass\">{{ result.title }}</div>\n\n            <div ng-if=\"matchClass && result.description && result.description != ''\" class=\"angucomplete-description\"\n                 ng-bind-html=\"result.description\"></div>\n            <div ng-if=\"!matchClass && result.description && result.description != ''\" class=\"angucomplete-description\">\n                {{result.description}}\n            </div>\n\n        </div>\n    </div>\n</div>");
+}]);
+angular.module('ck-autocomplete').run(['$templateCache', function ($templateCache) {
+    $templateCache.put('autocomplete.tpl.html', "<span class=\"autocomplete\" angucomplete-alt\n    ng-attr-id=\"{{ $ctrl.elementId || undefined }}\"\n    placeholder=\"{{ $ctrl.placeholder }}\"\n    minlength=\"{{ $ctrl.minLength }}\"\n    text-searching=\"{{ $ctrl.textSearching }}\"\n    text-no-results=\"{{ $ctrl.textNoResults }}\"\n    template-url=\"autocomplete.list.tpl.html\"\n\n    remote-api-handler=\"$ctrl.search\"\n    title-field=\"{{ $ctrl.displayField }}\"\n    initial-value=\"$ctrl.initialDisplay\"\n\n    input-class=\"{{$ctrl.listClass}}\"\n    match-class=\"highlight\"\n    disable-input=\"$ctrl.disableInput\"\n\n    selected-object=\"$ctrl.onSelect\"\n    input-changed=\"$ctrl.onChange\"\n    clear-selected=\"{{ $ctrl.clearSelected }}\"\n\n    focus-out=\"$ctrl.onFocusOut()\">\n</span>\n");
+}]);
+(function () {
   'use strict';
+
+  angular.module('ck-autocomplete').filter('without', withoutFilter);
 
   /**
    * Filters out from the source array items from the exclusion array that match either by === equality or their id property
    * @returns {Function}
    */
-
   function withoutFilter() {
     return function (sourceArray, exclusionArray) {
       var filteredArray = [];
@@ -244,6 +295,4 @@
       }
     };
   }
-
-  angular.module('ck-autocomplete').filter('without', withoutFilter);
 })();

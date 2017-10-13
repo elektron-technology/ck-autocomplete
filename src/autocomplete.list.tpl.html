@@ -11,8 +11,12 @@
         <div class="angucomplete-searching" ng-show="!searching && (!results || results.length == 0)"
              ng-bind="textNoResults"></div>
 
-        <div class="angucomplete-loadmore" ng-if="!searching && $parent.loadMore" ng-bind="$parent.textLoadMore">
-        </div>
+             <div class="angucomplete-loadmore" ng-if="!searching && $parent.loadMore" ng-bind="$parent.textLoadMore">
+            </div>
+
+            <div class="angucomplete-loadmore" ng-if="!searching && $parent.loadMore" >
+                {{ $parent.textLoadMore}}
+            </div>
 
         <div class="angucomplete-row" ng-repeat="result in results" ng-click="selectResult(result)"
              ng-mouseenter="hoverRow($index)" ng-class="{'angucomplete-selected-row': $index == currentIndex}">
