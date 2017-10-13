@@ -24,6 +24,7 @@
     "babel-core": "^6.26.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
+    "gulp-angular-templates": "0.0.2",
     "gulp-babel": "^7.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-header": "^1.8.9",

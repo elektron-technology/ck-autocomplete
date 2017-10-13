@@ -9,6 +9,7 @@ const uglify = require('gulp-uglify');
 const rename = require('gulp-rename');
 const header = require('gulp-header');
 const minifyCSS = require('gulp-minify-css');
+const angularTemplates = require('gulp-angular-templates');
 
 const runSequence = require('run-sequence');
 const del = require('del');
@@ -27,25 +28,34 @@ let BANNER = [
 let PATH = {
   SOURCE: './src/',
   TEST: './test/',
-  DIST: './dist/'
+  DIST: './dist/',
+  TEMP: './tmp/'
 };
 
 let filename = 'autocomplete';
+let ckModule = 'ck-autocomplete';
 
 gulp.task('default', ['build']);
 
-gulp.task('build', ['clean'], function(cb) {
+gulp.task('build', ['clean-dist'], function(cb) {
   runSequence(
     'sass',
+    'html',
+    'move',
     'convert-and-concat',
     'uglify',
     'minify',
     'banner',
+    'clean-tmp',
     cb);
 });
 
-gulp.task('clean', function(cb) {
+gulp.task('clean-dist', function(cb) {
   return del([PATH.DIST], cb);
+});
+
+gulp.task('clean-temp', function(cb) {
+  return del([PATH.TEMP], cb);
 });
 
 gulp.task('sass', function() {
@@ -55,9 +65,23 @@ gulp.task('sass', function() {
     .pipe(wait(500));
 });
 
+gulp.task('html', function () {
+  return gulp.src(`${PATH.SOURCE}/**/*.html`)
+      .pipe(angularTemplates({ module: ckModule, standalone: false }))
+      .pipe(gulp.dest(PATH.TEMP));
+});
+
+gulp.task('move', function() {
+  return gulp.src([
+      `${PATH.SOURCE}/**/*.js`,
+      
+    ])
+    .pipe(gulp.dest(PATH.TEMP));
+});
+
 gulp.task('convert-and-concat', function() {
   return gulp.src([
-      `${PATH.SOURCE}/**/*.js`
+      `${PATH.TEMP}/**/*.js`
     ])
     .pipe(babel())
     .pipe(concat(filename + '.js'))
