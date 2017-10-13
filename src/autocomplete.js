@@ -1,6 +1,10 @@
 (function() {
     
       angular.module('ck-autocomplete', [])
+        .config(function($compileProvider) {
+          // 1.5 components working with angular 1.6
+          $compileProvider.preAssignBindingsEnabled(true);
+        })
         .component('ckAutocomplete', {
           templateUrl: 'directives/autocomplete/autocomplete.tpl.html',
           controller: autocompleteController,
@@ -33,6 +37,7 @@
     
       function autocompleteController($filter, $scope, $q, $timeout) {
         var self = this;
+
         // set up default values
         $scope.loadMore = false;
         self.limit = self.limit || 10;

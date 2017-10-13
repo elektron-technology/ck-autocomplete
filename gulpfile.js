@@ -1,10 +1,28 @@
 'use strict';
 
 const gulp = require('gulp');
+const concat = require('gulp-concat');
+const babel = require('gulp-babel');
 const sass = require('gulp-sass');
 const wait = require('gulp-wait');
+const uglify = require('gulp-uglify');
+const rename = require('gulp-rename');
+const header = require('gulp-header');
+const minifyCSS = require('gulp-minify-css');
+
+const runSequence = require('run-sequence');
 const del = require('del');
 const karma = require('karma').Server;
+const pkg = require('./package');
+
+let BANNER = [
+  '/**',
+  ' * <%= pkg.name %> v<%= pkg.version %> (<%= pkg.homepage %>)',
+  ' * Copyright <%= new Date().getFullYear() %> <%= pkg.author %>',
+  ' * Licensed under <%= pkg.license %>',
+  ' */',
+  ''
+].join('\n');
 
 let PATH = {
   SOURCE: './src/',
@@ -12,11 +30,23 @@ let PATH = {
   DIST: './dist/'
 };
 
-let handleErr = function(err) {
-  console.error('ERROR' + (err.fileName ? ' in ' + err.fileName : ':'));
-  console.error(err.message);
-  this.end();
-};
+let filename = 'autocomplete';
+
+gulp.task('default', ['build']);
+
+gulp.task('build', ['clean'], function(cb) {
+  runSequence(
+    'sass',
+    'convert-and-concat',
+    'uglify',
+    'minify',
+    'banner',
+    cb);
+});
+
+gulp.task('clean', function(cb) {
+  return del([PATH.DIST], cb);
+});
 
 gulp.task('sass', function() {
   return gulp.src(`${PATH.SOURCE}*.scss`)
@@ -25,8 +55,41 @@ gulp.task('sass', function() {
     .pipe(wait(500));
 });
 
-gulp.task('clean', function(cb) {
-  del([PATH.DIST], cb);
+gulp.task('convert-and-concat', function() {
+  return gulp.src([
+      `${PATH.SOURCE}/**/*.js`
+    ])
+    .pipe(babel())
+    .pipe(concat(filename + '.js'))
+    .pipe(gulp.dest(PATH.DIST));
+});
+
+gulp.task('uglify', function() {
+  return gulp.src(PATH.DIST + filename + '.js')
+    .pipe(uglify()).on('error', handleErr)
+    .pipe(rename({
+      basename: filename,
+      suffix: '.min'
+    }))
+    .pipe(gulp.dest(PATH.DIST));
+});
+
+gulp.task('minify', function() {
+  return gulp.src(PATH.DIST + filename + '.css')
+    .pipe(minifyCSS())
+    .pipe(rename({
+      basename: filename,
+      suffix: '.min'
+    }))
+    .pipe(gulp.dest(PATH.DIST));
+});
+
+gulp.task('banner', function() {
+  return gulp.src(PATH.DIST + '*')
+    .pipe(header(BANNER, {
+      pkg: pkg
+    }))
+    .pipe(gulp.dest(PATH.DIST));
 });
 
 gulp.task('test', function (done) {
@@ -35,3 +98,9 @@ gulp.task('test', function (done) {
     singleRun: true
   }, done).start();
 });
+
+let handleErr = function(err) {
+  console.error('ERROR' + (err.fileName ? ' in ' + err.fileName : ':'));
+  console.error(err.message);
+  this.end();
+};

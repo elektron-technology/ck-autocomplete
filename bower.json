@@ -2,19 +2,19 @@
   "name": "ck-autocomplete",
   "version": "1.0.0",
   "authors": [
-    "Jesus Bernal <Jesus.Bernal@checkit.net>"
+    "Application Team (checkit.net)"
   ],
   "description": "Angular autocomplete component",
   "main": [
-    "dist/autocomplete.min.js",
-    "dist/autocomplete.min.css"
+    "dist/autocomplete.js",
+    "dist/autocomplete.css"
   ],
   "keywords": [
     "angularjs",
     "autocomplete"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/elektron-technology/ck-autocomplete",
   "ignore": [
     "**/.*",
     "node_modules",
