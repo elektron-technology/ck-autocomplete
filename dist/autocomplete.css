@@ -20,7 +20,7 @@
     margin-bottom: 0px; }
   .autocomplete .angucomplete-selected-row {
     background-color: #e6e6e6; }
-  .autocomplete .highlight {
+  .autocomplete .angucomplete-highlight {
     font-weight: bold;
     color: #f36c60; }
   .autocomplete .angucomplete-searching {
