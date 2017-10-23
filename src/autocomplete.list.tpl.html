@@ -11,7 +11,7 @@
         <div class="angucomplete-searching" ng-show="!searching && (!results || results.length == 0)"
              ng-bind="textNoResults"></div>
 
-            <div class="angucomplete-loadmore" ng-show="!searching && $parent.loadMore">
+            <div class="angucomplete-loadmore" disabled ng-show="!searching && $parent.loadMore">
                 {{ $parent.textLoadMore }}
             </div>
 
