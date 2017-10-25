@@ -1,5 +1,5 @@
 /**
- * @checkit/ck-autocomplete v1.0.0 (https://github.com/elektron-technology/ck-autocomplete)
+ * @checkit/ck-autocomplete v1.0.3 (https://github.com/elektron-technology/ck-autocomplete)
  * Copyright 2017 Application Team (checkit.net)
  * Licensed under MIT
  */
@@ -18,6 +18,8 @@
     cursor: pointer;
     padding: 6px;
     margin-bottom: 0px; }
+  .autocomplete .angucomplete-title {
+    white-space: pre; }
   .autocomplete .angucomplete-selected-row {
     background-color: #e6e6e6; }
   .autocomplete .angucomplete-highlight {
