@@ -27,7 +27,7 @@
     padding: 6px;
     margin-bottom: 0px; }
   .autocomplete .angucomplete-title {
-    white-space: pre; }
+    white-space: pre-wrap; }
   .autocomplete .angucomplete-selected-row {
     background-color: #e6e6e6; }
   .autocomplete .angucomplete-highlight {
