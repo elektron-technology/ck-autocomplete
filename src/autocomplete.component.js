@@ -31,7 +31,8 @@
         disableInput: '=?',
         exclusionList: '=',
         listClass: '@',
-        elementId: '@' // assign an ng-attr-id to the autocomplete element for identification
+        elementId: '@', // assign an ng-attr-id to the autocomplete element for identification,
+        useCache: '<?'
       },
 
     });
@@ -54,6 +55,7 @@
     self.clearOnNoSelection = self.clearOnNoSelection || false;
     self.returnObject = self.returnObject || false;
     self.listClass = self.listClass || 'form-control';
+    self.useCache = self.useCache === undefined ? true : self.useCache;
 
     // if there is an initial value in model and a function
     // to fetch elements by id, go and grab it
@@ -98,7 +100,7 @@
       }
       // If we have any exclusions then we need to abandon use of the cache as every query should be
       // fresh from the cloud
-      var useCache = excludedLength === 0;
+      var useCache = self.useCache && excludedLength === 0;
 
       if (useCache && term in self.cache) {
         thisSearch = $q.resolve(self.cache[term]);

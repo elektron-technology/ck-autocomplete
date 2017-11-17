@@ -56,6 +56,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.disableInput).toBe(false);
     expect(ctrl.clearSelected).toBeUndefined();
     expect(ctrl.onSelected).toBeUndefined();
+    expect(ctrl.useCache).toBe(true);
   });
 
   it('should allow override of parameters through component API', function() {
@@ -63,7 +64,7 @@ describe('Autocomplete component', function() {
     var bindings = {
       limit: 3, displayField: 'desc', idField: 'customId', minLength: 4,
       textSearching: 'searching', textNoResults: 'noresults', textLoadMore: 'loadmore',
-      clearOnNoSelection: true, clearSelected: 'true'
+      clearOnNoSelection: true, clearSelected: 'true', useCache: false
     };
 
     // Act
@@ -78,6 +79,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.textNoResults).toBe('noresults');
     expect(ctrl.clearOnNoSelection).toBe(true);
     expect(ctrl.clearSelected).toBe('true');
+    expect(ctrl.useCache).toBe(false);
     expect(translateSpy).not.toHaveBeenCalled();
   });
 
@@ -191,6 +193,29 @@ describe('Autocomplete component', function() {
         expect(ctrl.onSearch.calls.count()).toBe(1);
         expect(matches1).toEqual(entities);
         expect(matches2).toEqual(entities);
+        done();
+      });
+    });
+    $rootScope.$digest();
+  });
+
+  it('should not use the cache when useCache is set to false', function (done) {
+    // Arrange
+    var model = {};
+    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }] ;
+    var entities2 = [{ id: 'id3', name: 'name3' }, { id: 'id4', name: 'name4' }] ;
+    var onSearch = jasmine.createSpy('onSearch').and.returnValues($q.resolve(entities), $q.resolve(entities2));
+
+    var bindings = { model: model, onSearch: onSearch, useCache: false };
+
+    // Act
+    var ctrl = $componentController('ckAutocomplete', null, bindings);
+    ctrl.search('name').then(function(matches1) {
+      ctrl.search('name').then(function(matches2) {
+        // Assert
+        expect(ctrl.onSearch.calls.count()).toBe(2);
+        expect(matches1).toEqual(entities);
+        expect(matches2).toEqual(entities2);
         done();
       });
     });
