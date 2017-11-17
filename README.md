@@ -14,7 +14,7 @@ Ensure `dist/autocomplete.js` and `dist/autocomplete.css` are included in your a
 
 1. Make changes 
 2. Run `gulp test` and make sure they all pass
-3. Run `gulp` to genarate new distribution code
+3. Run `gulp` to generate new distribution code
 4. Bump version accordingly and publish it
 
 ## License
