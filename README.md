@@ -1,6 +1,6 @@
 # ck-autocomplete
 
-Angular autocomplete component
+Angular autocomplete component. This repository has to be public to be consumed from bower.
 
 ## Installation
 
