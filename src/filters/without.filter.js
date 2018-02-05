@@ -5,7 +5,8 @@
     .filter('without', withoutFilter);
 
   /**
-   * Filters out from the source array items from the exclusion array that match either by === equality or their id property
+   * Filters out from the source array items from the exclusion array that match either by === equality
+   * or their id property
    * @returns {Function}
    */
   function withoutFilter() {
@@ -31,5 +32,4 @@
       }
     };
   }
-  
 })();

@@ -1,26 +1,26 @@
-(function () {
+(function() {
   'use strict';
 
   angular.module('ck-autocomplete', [
     'angucomplete-alt'
-    ])
+  ])
     .config(function($compileProvider) {
-        // 1.5 components working with angular 1.6
-        $compileProvider.preAssignBindingsEnabled(true);
+      // 1.5 components working with angular 1.6
+      $compileProvider.preAssignBindingsEnabled(true);
     })
     .component('ckAutocomplete', {
       templateUrl: 'autocomplete.tpl.html',
       controller: autocompleteController,
       bindings: {
-        model: '=', // property to leave idField of the selection
-        onSearch: '&', // function to use to search for matches
+        model: '=', // Property to leave idField of the selection
+        onSearch: '&', // Function to use to search for matches
         // optional
-        onSelected: '&', // function to call after a user has selected an item
-        limit: '@', // if not provided will take constant value
-        findById: '&?', // function to find an entity given its id
-        displayField: '@', // property from entity to display in input
-        idField: '@', // property where entity's id is
-        returnObject: '=?', // return whole object to model instead of just the id (takes precedence over idField)
+        onSelected: '&', // Function to call after a user has selected an item
+        limit: '@', // If not provided will take constant value
+        findById: '&?', // Function to find an entity given its id
+        displayField: '@', // Property from entity to display in input
+        idField: '@', // Property where entity's id is
+        returnObject: '=?', // Return whole object to model instead of just the id (takes precedence over idField)
         placeholder: '@',
         minLength: '@',
         textSearching: '@',
@@ -31,9 +31,9 @@
         disableInput: '=?',
         exclusionList: '=',
         listClass: '@',
-        elementId: '@', // assign an ng-attr-id to the autocomplete element for identification,
+        elementId: '@', // Assign an ng-attr-id to the autocomplete element for identification,
         useCache: '<?'
-      },
+      }
 
     });
 
@@ -42,7 +42,7 @@
   function autocompleteController($filter, $scope, $q, $timeout, ckAutocompleteConfig) {
     var self = this;
 
-    // set up default values
+    // Set up default values
     $scope.loadMore = false;
     self.limit = self.limit || 10;
     self.displayField = self.displayField || 'name';
@@ -57,10 +57,10 @@
     self.listClass = self.listClass || 'form-control';
     self.useCache = self.useCache === undefined ? true : self.useCache;
 
-    // if there is an initial value in model and a function
+    // If there is an initial value in model and a function
     // to fetch elements by id, go and grab it
     if (self.model && self.findById) {
-      self.findById({ id: self.model }).then(function (entity) {
+      self.findById({ id: self.model }).then(function(entity) {
         self.initialDisplay = entity[self.displayField];
       });
     }
@@ -72,7 +72,7 @@
     self.onChange = onChange;
     self.onFocusOut = onFocusOut;
 
-    $scope.$on('ck-autocomplete:clearInput', function (event, id) {
+    $scope.$on('ck-autocomplete:clearInput', function(event, id) {
       clearInput(id);
       self.cache = {};
     });
@@ -88,7 +88,7 @@
      * @returns {Promise}
      */
     function search(term) {
-      // escape any regular expression special characters
+      // Escape any regular expression special characters
       term = term.toLowerCase().replace(/[-[\]{}()*+?.,\\/^$|#\s]/g, '\\$&');
       var thisSearch;
       // Do we have any items to be potentially excluded
@@ -108,7 +108,7 @@
         // Fetch enough results to fulfil the limit even after exclusion
         thisSearch = self.onSearch({ skip: 0, limit: self.limit + 1 + excludedLength, term: term });
       }
-      return thisSearch.then(function (results) {
+      return thisSearch.then(function(results) {
         // If we're using the cache the add the result before filtering out any exclusions
         if (useCache) {
           self.cache[term] = angular.copy(results);
@@ -120,7 +120,7 @@
 
         if (results.length > self.limit) {
           $scope.loadMore = true;
-          // chop the end of the array as we don't need the end items
+          // Chop the end of the array as we don't need the end items
           results.length = self.limit;
         } else {
           $scope.loadMore = false;
@@ -159,7 +159,7 @@
      * @param term
      */
     function onChange(term) {
-      // this function can be executed along with/instead of
+      // This function can be executed along with/instead of
       // focus-out. However, with focus out we clear selection
       // only when user blurs the input
       if (!term) {
@@ -202,8 +202,8 @@
      * @returns {*}
     */
     function propertyByString(object, nestedStringProperty) {
-      nestedStringProperty = nestedStringProperty.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-      nestedStringProperty = nestedStringProperty.replace(/^\./, '');           // strip a leading dot
+      nestedStringProperty = nestedStringProperty.replace(/\[(\w+)\]/g, '.$1'); // Convert indexes to properties
+      nestedStringProperty = nestedStringProperty.replace(/^\./, ''); // Strip a leading dot
       var a = nestedStringProperty.split('.');
       for (var i = 0, n = a.length; i < n; ++i) {
         var k = a[i];
