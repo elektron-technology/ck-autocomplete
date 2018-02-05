@@ -18,8 +18,9 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angucomplete-alt/angucomplete-alt.js',
-      'src/autocomplete.component.js',      
+      'src/autocomplete.component.js',
       'src/autocomplete.config.factory.js',
+      'src/filters/without.filter.js',
       'test/*.spec.js'
     ],
 
