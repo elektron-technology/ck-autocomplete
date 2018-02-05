@@ -11,22 +11,13 @@
    */
   function withoutFilter() {
     return function(sourceArray, exclusionArray) {
-      var filteredArray = [];
-
       if (exclusionArray && (exclusionArray.length > 0)) {
-        angular.forEach(sourceArray, function(sourceItem) {
-          var isUnique = true;
-          angular.forEach(exclusionArray, function(exclusionItem) {
-            if (sourceItem === exclusionItem || (sourceItem.id && exclusionItem.id &&
-              angular.equals(sourceItem.id, exclusionItem.id))) {
-              isUnique = false;
-            }
+        return sourceArray.filter(function(sourceItem) {
+          return !exclusionArray.some(function(exclusionItem) {
+            return sourceItem === exclusionItem
+              || (sourceItem.id && exclusionItem.id && angular.equals(sourceItem.id, exclusionItem.id));
           });
-          if (isUnique) {
-            filteredArray.push(sourceItem);
-          }
         });
-        return filteredArray;
       } else {
         return sourceArray;
       }
