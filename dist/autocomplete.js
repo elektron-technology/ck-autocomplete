@@ -1,6 +1,6 @@
 /**
- * @checkit/ck-autocomplete v1.0.5 (https://github.com/elektron-technology/ck-autocomplete)
- * Copyright 2017 Application Team (checkit.net)
+ * @checkit/ck-autocomplete v1.0.6 (https://github.com/elektron-technology/ck-autocomplete)
+ * Copyright 2018 Application Team (checkit.net)
  * Licensed under MIT
  */
 (function () {
@@ -13,15 +13,15 @@
     templateUrl: 'autocomplete.tpl.html',
     controller: autocompleteController,
     bindings: {
-      model: '=', // property to leave idField of the selection
-      onSearch: '&', // function to use to search for matches
+      model: '=', // Property to leave idField of the selection
+      onSearch: '&', // Function to use to search for matches
       // optional
-      onSelected: '&', // function to call after a user has selected an item
-      limit: '@', // if not provided will take constant value
-      findById: '&?', // function to find an entity given its id
-      displayField: '@', // property from entity to display in input
-      idField: '@', // property where entity's id is
-      returnObject: '=?', // return whole object to model instead of just the id (takes precedence over idField)
+      onSelected: '&', // Function to call after a user has selected an item
+      limit: '@', // If not provided will take constant value
+      findById: '&?', // Function to find an entity given its id
+      displayField: '@', // Property from entity to display in input
+      idField: '@', // Property where entity's id is
+      returnObject: '=?', // Return whole object to model instead of just the id (takes precedence over idField)
       placeholder: '@',
       minLength: '@',
       textSearching: '@',
@@ -32,7 +32,7 @@
       disableInput: '=?',
       exclusionList: '=',
       listClass: '@',
-      elementId: '@', // assign an ng-attr-id to the autocomplete element for identification,
+      elementId: '@', // Assign an ng-attr-id to the autocomplete element for identification,
       useCache: '<?'
     }
 
@@ -43,7 +43,7 @@
   function autocompleteController($filter, $scope, $q, $timeout, ckAutocompleteConfig) {
     var self = this;
 
-    // set up default values
+    // Set up default values
     $scope.loadMore = false;
     self.limit = self.limit || 10;
     self.displayField = self.displayField || 'name';
@@ -58,7 +58,7 @@
     self.listClass = self.listClass || 'form-control';
     self.useCache = self.useCache === undefined ? true : self.useCache;
 
-    // if there is an initial value in model and a function
+    // If there is an initial value in model and a function
     // to fetch elements by id, go and grab it
     if (self.model && self.findById) {
       self.findById({ id: self.model }).then(function (entity) {
@@ -89,7 +89,7 @@
      * @returns {Promise}
      */
     function search(term) {
-      // escape any regular expression special characters
+      // Escape any regular expression special characters
       term = term.toLowerCase().replace(/[-[\]{}()*+?.,\\/^$|#\s]/g, '\\$&');
       var thisSearch;
       // Do we have any items to be potentially excluded
@@ -116,12 +116,14 @@
         }
         // Do we have any excluded items then filter them
         if (excludedLength > 0) {
-          results = $filter('without')(results, self.exclusionList);
+          results = $filter('without')(results, self.exclusionList, function (item) {
+            return propertyByString(item, self.idField);
+          });
         }
 
         if (results.length > self.limit) {
           $scope.loadMore = true;
-          // chop the end of the array as we don't need the end items
+          // Chop the end of the array as we don't need the end items
           results.length = self.limit;
         } else {
           $scope.loadMore = false;
@@ -160,7 +162,7 @@
      * @param term
      */
     function onChange(term) {
-      // this function can be executed along with/instead of
+      // This function can be executed along with/instead of
       // focus-out. However, with focus out we clear selection
       // only when user blurs the input
       if (!term) {
@@ -203,8 +205,8 @@
      * @returns {*}
     */
     function propertyByString(object, nestedStringProperty) {
-      nestedStringProperty = nestedStringProperty.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-      nestedStringProperty = nestedStringProperty.replace(/^\./, ''); // strip a leading dot
+      nestedStringProperty = nestedStringProperty.replace(/\[(\w+)\]/g, '.$1'); // Convert indexes to properties
+      nestedStringProperty = nestedStringProperty.replace(/^\./, ''); // Strip a leading dot
       var a = nestedStringProperty.split('.');
       for (var i = 0, n = a.length; i < n; ++i) {
         var k = a[i];
@@ -272,26 +274,26 @@ angular.module('ck-autocomplete').run(['$templateCache', function ($templateCach
   angular.module('ck-autocomplete').filter('without', withoutFilter);
 
   /**
-   * Filters out from the source array items from the exclusion array that match either by === equality or their id property
+   * Filters out from the source array items from the exclusion array that match either by === equality
+   * or their id property
    * @returns {Function}
    */
   function withoutFilter() {
-    return function (sourceArray, exclusionArray) {
-      var filteredArray = [];
+    return function (sourceArray, exclusionArray, getId) {
+      getId = getId || function (item) {
+        return item.id;
+      };
 
       if (exclusionArray && exclusionArray.length > 0) {
-        angular.forEach(sourceArray, function (sourceItem) {
-          var isUnique = true;
-          angular.forEach(exclusionArray, function (exclusionItem) {
-            if (sourceItem === exclusionItem || sourceItem.id && exclusionItem.id && angular.equals(sourceItem.id, exclusionItem.id)) {
-              isUnique = false;
-            }
+        return sourceArray.filter(function (sourceItem) {
+          var sourceId = getId(sourceItem);
+
+          return !exclusionArray.some(function (exclusionItem) {
+            var exclusionId = getId(exclusionItem);
+
+            return sourceItem === exclusionItem || sourceId && exclusionId && angular.equals(sourceId, exclusionId);
           });
-          if (isUnique) {
-            filteredArray.push(sourceItem);
-          }
         });
-        return filteredArray;
       } else {
         return sourceArray;
       }
