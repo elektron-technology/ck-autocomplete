@@ -47,4 +47,26 @@ describe('Without filter', function() {
     });
   });
 
+  describe('with a getId function provided', function() {
+    it('should use the custom id function to determine equality', function() {
+      var obj11 = {
+        id: {
+          entityId: '123',
+          version: 1
+        }
+      };
+
+      var obj12 = {
+        id: {
+          entityId: '123',
+          version: 2
+        }
+      };
+
+      var output = $filter('without')([obj11], [obj12], function(item) { return item.id.entityId; });
+
+      expect(output).toEqual([]);
+    });
+  });
+
 });

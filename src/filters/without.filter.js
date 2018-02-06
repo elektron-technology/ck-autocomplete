@@ -10,12 +10,20 @@
    * @returns {Function}
    */
   function withoutFilter() {
-    return function(sourceArray, exclusionArray) {
+    return function(sourceArray, exclusionArray, getId) {
+      getId = getId || function(item) {
+        return item.id;
+      };
+
       if (exclusionArray && (exclusionArray.length > 0)) {
         return sourceArray.filter(function(sourceItem) {
+          var sourceId = getId(sourceItem);
+
           return !exclusionArray.some(function(exclusionItem) {
+            var exclusionId = getId(exclusionItem);
+
             return sourceItem === exclusionItem
-              || (sourceItem.id && exclusionItem.id && angular.equals(sourceItem.id, exclusionItem.id));
+              || (sourceId && exclusionId && angular.equals(sourceId, exclusionId));
           });
         });
       } else {
