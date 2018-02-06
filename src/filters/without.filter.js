@@ -5,31 +5,30 @@
     .filter('without', withoutFilter);
 
   /**
-   * Filters out from the source array items from the exclusion array that match either by === equality or their id property
+   * Filters out from the source array items from the exclusion array that match either by === equality
+   * or their id property
    * @returns {Function}
    */
   function withoutFilter() {
-    return function(sourceArray, exclusionArray) {
-      var filteredArray = [];
+    return function(sourceArray, exclusionArray, getId) {
+      getId = getId || function(item) {
+        return item.id;
+      };
 
       if (exclusionArray && (exclusionArray.length > 0)) {
-        angular.forEach(sourceArray, function(sourceItem) {
-          var isUnique = true;
-          angular.forEach(exclusionArray, function(exclusionItem) {
-            if (sourceItem === exclusionItem || (sourceItem.id && exclusionItem.id &&
-              angular.equals(sourceItem.id, exclusionItem.id))) {
-              isUnique = false;
-            }
+        return sourceArray.filter(function(sourceItem) {
+          var sourceId = getId(sourceItem);
+
+          return !exclusionArray.some(function(exclusionItem) {
+            var exclusionId = getId(exclusionItem);
+
+            return sourceItem === exclusionItem
+              || (sourceId && exclusionId && angular.equals(sourceId, exclusionId));
           });
-          if (isUnique) {
-            filteredArray.push(sourceItem);
-          }
         });
-        return filteredArray;
       } else {
         return sourceArray;
       }
     };
   }
-  
 })();
