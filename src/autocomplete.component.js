@@ -115,7 +115,9 @@
         }
         // Do we have any excluded items then filter them
         if (excludedLength > 0) {
-          results = $filter('without')(results, self.exclusionList);
+          results = $filter('without')(results, self.exclusionList, function(item) {
+            return propertyByString(item, self.idField);
+          });
         }
 
         if (results.length > self.limit) {
