@@ -19,6 +19,7 @@
         limit: '@', // If not provided will take constant value
         findById: '&?', // Function to find an entity given its id
         displayField: '@', // Property from entity to display in input
+        descriptionField: '@', // Property to define the desciption field displayed under the title fields in the list
         idField: '@', // Property where entity's id is
         returnObject: '=?', // Return whole object to model instead of just the id (takes precedence over idField)
         placeholder: '@',
@@ -46,6 +47,7 @@
     $scope.loadMore = false;
     self.limit = self.limit || 10;
     self.displayField = self.displayField || 'name';
+    self.descriptionField = self.descriptionField || '';
     self.idField = self.idField || 'id.entityId';
     self.minLength = self.minLength || 0;
     self.textSearching = self.textSearching || ckAutocompleteConfig.getSearchingText();

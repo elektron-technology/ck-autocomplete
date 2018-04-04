@@ -1,5 +1,5 @@
 /**
- * @checkit/ck-autocomplete v1.0.8 (https://github.com/elektron-technology/ck-autocomplete)
+ * @checkit/ck-autocomplete v1.0.9 (https://github.com/elektron-technology/ck-autocomplete)
  * Copyright 2018 Application Team (checkit.net)
  * Licensed under MIT
  */
@@ -20,6 +20,7 @@
       limit: '@', // If not provided will take constant value
       findById: '&?', // Function to find an entity given its id
       displayField: '@', // Property from entity to display in input
+      descriptionField: '@', // Property to define the desciption field displayed under the title fields in the list
       idField: '@', // Property where entity's id is
       returnObject: '=?', // Return whole object to model instead of just the id (takes precedence over idField)
       placeholder: '@',
@@ -47,6 +48,7 @@
     $scope.loadMore = false;
     self.limit = self.limit || 10;
     self.displayField = self.displayField || 'name';
+    self.descriptionField = self.descriptionField || '';
     self.idField = self.idField || 'id.entityId';
     self.minLength = self.minLength || 0;
     self.textSearching = self.textSearching || ckAutocompleteConfig.getSearchingText();
@@ -266,7 +268,7 @@ angular.module('ck-autocomplete').run(['$templateCache', function ($templateCach
     $templateCache.put('autocomplete.list.tpl.html', "<div class=\"angucomplete-holder\" ng-class=\"{'angucomplete-dropdown-visible': showDropdown}\">\n    <input id=\"{{id}}_value\" name=\"{{inputName}}\" tabindex=\"{{fieldTabindex}}\"\n           ng-class=\"{'angucomplete-input-not-empty': notEmpty}\" ng-model=\"searchStr\" ng-disabled=\"disableInput\"\n           type=\"{{inputType}}\" placeholder=\"{{placeholder}}\" maxlength=\"{{maxlength}}\" ng-focus=\"onFocusHandler()\"\n           class=\"{{inputClass}}\" ng-focus=\"resetHideResults()\" ng-blur=\"hideResults($event)\" autocapitalize=\"off\"\n           autocorrect=\"off\" autocomplete=\"off\" ng-change=\"inputChangeHandler(searchStr)\"/>\n\n    <div id=\"{{id}}_dropdown\" class=\"angucomplete-dropdown\" ng-show=\"showDropdown\">\n\n        <div class=\"angucomplete-searching\" ng-show=\"searching\" ng-bind=\"textSearching\"></div>\n        <div class=\"angucomplete-searching\" ng-show=\"!searching && (!results || results.length == 0)\"\n             ng-bind=\"textNoResults\"></div>\n\n            <div class=\"angucomplete-loadmore\" disabled ng-show=\"!searching && $parent.loadMore\">\n                {{ $parent.textLoadMore }}\n            </div>\n\n        <div class=\"angucomplete-row\" ng-repeat=\"result in results\" ng-click=\"selectResult(result)\"\n             ng-mouseenter=\"hoverRow($index)\" ng-class=\"{'angucomplete-selected-row': $index == currentIndex}\">\n\n            <div class=\"angucomplete-title\" ng-if=\"matchClass\" ng-bind-html=\"result.title\"></div>\n            <div class=\"angucomplete-title\" ng-if=\"!matchClass\">{{ result.title }}</div>\n\n            <div ng-if=\"matchClass && result.description && result.description != ''\" class=\"angucomplete-description\"\n                 ng-bind-html=\"result.description\"></div>\n            <div ng-if=\"!matchClass && result.description && result.description != ''\" class=\"angucomplete-description\">\n                {{result.description}}\n            </div>\n\n        </div>\n    </div>\n</div>");
 }]);
 angular.module('ck-autocomplete').run(['$templateCache', function ($templateCache) {
-    $templateCache.put('autocomplete.tpl.html', "<span class=\"autocomplete\" angucomplete-alt\n    type=\"search\"\n    ng-attr-id=\"{{ $ctrl.elementId || undefined }}\"\n    placeholder=\"{{ $ctrl.placeholder }}\"\n    minlength=\"{{ $ctrl.minLength }}\"\n    text-searching=\"{{ $ctrl.textSearching }}\"\n    text-no-results=\"{{ $ctrl.textNoResults }}\"\n    template-url=\"autocomplete.list.tpl.html\"\n\n    remote-api-handler=\"$ctrl.search\"\n    title-field=\"{{ $ctrl.displayField }}\"\n    initial-value=\"$ctrl.initialDisplay\"\n\n    input-class=\"{{$ctrl.listClass}}\"\n    match-class=\"angucomplete-highlight\"\n    disable-input=\"$ctrl.disableInput\"\n\n    selected-object=\"$ctrl.onSelect\"\n    input-changed=\"$ctrl.onChange\"\n    clear-selected=\"{{ $ctrl.clearSelected }}\"\n\n    focus-out=\"$ctrl.onFocusOut()\">\n</span>\n");
+    $templateCache.put('autocomplete.tpl.html', "<span class=\"autocomplete\" angucomplete-alt\n    type=\"search\"\n    ng-attr-id=\"{{ $ctrl.elementId || undefined }}\"\n    placeholder=\"{{ $ctrl.placeholder }}\"\n    minlength=\"{{ $ctrl.minLength }}\"\n    text-searching=\"{{ $ctrl.textSearching }}\"\n    text-no-results=\"{{ $ctrl.textNoResults }}\"\n    template-url=\"autocomplete.list.tpl.html\"\n\n    remote-api-handler=\"$ctrl.search\"\n    title-field=\"{{ $ctrl.displayField }}\"\n    description-field=\"{{$ctrl.descriptionField}}\"\n    initial-value=\"$ctrl.initialDisplay\"\n\n    input-class=\"{{$ctrl.listClass}}\"\n    match-class=\"angucomplete-highlight\"\n    disable-input=\"$ctrl.disableInput\"\n\n    selected-object=\"$ctrl.onSelect\"\n    input-changed=\"$ctrl.onChange\"\n    clear-selected=\"{{ $ctrl.clearSelected }}\"\n\n    focus-out=\"$ctrl.onFocusOut()\">\n</span>\n");
 }]);
 (function () {
   'use strict';
