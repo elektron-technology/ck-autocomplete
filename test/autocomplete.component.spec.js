@@ -48,6 +48,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.findById).toBeUndefined();
     expect(ctrl.initialDisplay).toBeUndefined();
     expect(ctrl.displayField).toBe('name');
+    expect(ctrl.descriptionField).toBe('');
     expect(ctrl.idField).toBe('id.entityId');
     expect(ctrl.minLength).toBe(0);
     expect(ctrl.textSearching).toBe('Searching...');
@@ -64,7 +65,7 @@ describe('Autocomplete component', function() {
     var bindings = {
       limit: 3, displayField: 'desc', idField: 'customId', minLength: 4,
       textSearching: 'searching', textNoResults: 'noresults', textLoadMore: 'loadmore',
-      clearOnNoSelection: true, clearSelected: 'true', useCache: false
+      clearOnNoSelection: true, clearSelected: 'true', useCache: false, descriptionField: 'description'
     };
 
     // Act
@@ -73,6 +74,7 @@ describe('Autocomplete component', function() {
     // Assert
     expect(ctrl.limit).toBe(3);
     expect(ctrl.displayField).toBe('desc');
+    expect(ctrl.descriptionField).toBe('description');
     expect(ctrl.idField).toBe('customId');
     expect(ctrl.minLength).toBe(4);
     expect(ctrl.textSearching).toBe('searching');
