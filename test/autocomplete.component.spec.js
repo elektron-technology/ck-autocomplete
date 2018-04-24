@@ -4,12 +4,12 @@ describe('Autocomplete component', function() {
 
   var $componentController;
 
-  var $q, $rootScope, $scope, $timeout;
+  var $q, $rootScope, $scope, $timeout, $element;
 
   var mockWithoutFilter = function() {
     return [{ id: 'id2', name: 'name2' }];
   };
-  var translateSpy, withoutSpy;
+  var translateSpy, withoutSpy, elementSpy;
 
   beforeEach(module('ck-autocomplete'));
 
@@ -20,7 +20,17 @@ describe('Autocomplete component', function() {
     withoutSpy = jasmine.createSpy('withoutFilter').and.callFake(function() {
       return [{ id: 'id2', name: 'name2' }];
     });
+    element = [{
+      querySelector: function(a) {
+        return {style: {top: 0, height: 0}};
+      },
+      getBoundingClientRect: function() {
+        return {top: 0, bottom: 0};
+      }
+    }];
+
     $provide.value('withoutFilter', withoutSpy );
+    $provide.value('$element', element);
   }));
 
   beforeEach(inject(function(_$componentController_, _$q_, _$rootScope_, _$timeout_) {
@@ -35,7 +45,7 @@ describe('Autocomplete component', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = {};
-    var bindings = { model: model, onSearch: search };
+    var bindings = {model: model, onSearch: search};
 
     // Act
     var ctrl = $componentController('ckAutocomplete', null, bindings);
