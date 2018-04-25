@@ -2,8 +2,8 @@
 
 describe('Autocomplete component', function() {
 
-  var $componentController, $q, $rootScope, $scope, $timeout, $element;
-  var translateSpy, withoutSpy, elementSpy, mockElement;
+  var $componentController, $q, $rootScope, $scope, $timeout, $element, provide;
+  var translateSpy, withoutSpy, elementSpy, mockElement, queriedElement, elementRect;
 
   beforeEach(module('ck-autocomplete'));
 
@@ -16,17 +16,36 @@ describe('Autocomplete component', function() {
       return [{ id: 'id2', name: 'name2' }];
     });
 
+    elementRect = {left:0, top: 50, right: 100, bottom: 70};
+    queriedElement = {
+      style: {},
+      getBoundingClientRect: jasmine.createSpy('getBoundingClientRect').and.callFake(function() {
+        return {
+          left: elementRect.left,
+          right: elementRect.right,
+          top: elementRect.bottom,
+          bottom: elementRect.bottom + 200,
+          height: 200,
+          width: Math.abs(elementRect.right - elementRect.width)
+        };
+      })
+    };
+
     mockElement = [{
       querySelector: jasmine.createSpy('querySelector').and.callFake(function(a) {
-        return {style: {top: 0, height: 0}};
+        return queriedElement;
       }),
       getBoundingClientRect: jasmine.createSpy('getBoundingClientRect').and.callFake(function() {
-        return {top: 0, bottom: 0};
+        elementRect.height = Math.abs(elementRect.bottom - elementRect.top);
+        elementRect.width = Math.abs(elementRect.right - elementRect.left);
+        return elementRect;
       })
     }];
 
     $provide.value('withoutFilter', withoutSpy);
     $provide.value('$element', mockElement);
+
+    provide = $provide;
   }));
 
   beforeEach(inject(function(_$componentController_, _$q_, _$rootScope_, _$timeout_) {
@@ -498,6 +517,50 @@ describe('Autocomplete component', function() {
 
     // Assert
     expect($scope.$broadcast).toHaveBeenCalledWith('angucomplete-alt:clearInput');
+  });
+
+  it('should reset the top and height values of the dropdown when a focus out event occurs', function() {
+    // Arrange
+    var search = jasmine.createSpy('search');
+    var model = {};
+    var bindings = {model: model, onSearch: search};
+
+    // Act
+    var ctrl = $componentController('ckAutocomplete', null, bindings);
+    ctrl.onFocusOut();
+
+    // Assert
+    expect(mockElement[0].querySelector).toHaveBeenCalled();
+    expect(queriedElement.style.height).toBeNull;
+    expect(queriedElement.style.top).toBeNull;
+  });
+
+  it('should not set the top and height values if the dropdown fits in the page below the field', function() {
+    // Arrange
+    var search = jasmine.createSpy('search');
+    var model = {};
+    var bindings = {model: model, onSearch: search};
+
+    var $window = {
+      pageYOffset: 0
+    };
+
+    // Set the document and window extents. The field fits well within the page
+    elementRect = {left:0, top: 50, right: 100, bottom: 70};
+    provide.value('$window', {pageYOffset: 0});
+    provide.value('document', {clientTop: 0, clientHeight: 1000});
+
+    // Act
+    var ctrl = $componentController('ckAutocomplete', null, bindings);
+    ctrl.onFocusIn();
+    $timeout.flush();
+    //$rootScope.$digest();
+
+    // Assert
+    expect(mockElement[0].querySelector).toHaveBeenCalled();
+    expect(queriedElement.getBoundingClientRect).toHaveBeenCalled();
+    expect(queriedElement.style.height).toBeNull;
+    expect(queriedElement.style.top).toBeNull;
   });
 
 });
