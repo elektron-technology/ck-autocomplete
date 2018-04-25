@@ -1,45 +1,44 @@
-(function () {
-    'use strict';
-  
-    angular.module('ck-autocomplete')
-        .factory('ckAutocompleteConfig', function() {
-            var textSearching = 'Searching...';
-            var textNoResults = 'No results';
-            var textLoadMore = 'Too many results. Please narrow search';
+(function() {
+  'use strict';
 
-            return {
-                setSearchingText: setSearchingText,
-                setNoResultsText: setNoResultsText,
-                setLoadMoreText: setLoadMoreText,
-                getSearchingText: getSearchingText,
-                getNoResultsText: getNoResultsText,
-                getLoadMoreText: getLoadMoreText    
-            }
+  angular.module('ck-autocomplete')
+    .factory('ckAutocompleteConfig', function() {
+      var textSearching = 'Searching...';
+      var textNoResults = 'No results';
+      var textLoadMore = 'Too many results. Please narrow search';
 
-            function setSearchingText(text) {
-                textSearching = text;
-            };
+      return {
+        setSearchingText: setSearchingText,
+        setNoResultsText: setNoResultsText,
+        setLoadMoreText: setLoadMoreText,
+        getSearchingText: getSearchingText,
+        getNoResultsText: getNoResultsText,
+        getLoadMoreText: getLoadMoreText
+      };
 
-            function setNoResultsText(text) {
-                textNoResults = text;
-            };
+      function setSearchingText(text) {
+        textSearching = text;
+      }
 
-            function setLoadMoreText(text) {
-                textLoadMore = text;
-            };
+      function setNoResultsText(text) {
+        textNoResults = text;
+      }
 
-            function getSearchingText() {
-                return textSearching;
-            };
+      function setLoadMoreText(text) {
+        textLoadMore = text;
+      }
 
-            function getNoResultsText() {
-                return textNoResults;
-            };
+      function getSearchingText() {
+        return textSearching;
+      }
 
-            function getLoadMoreText() {
-                return textLoadMore;
-            };
+      function getNoResultsText() {
+        return textNoResults;
+      }
 
-        });
+      function getLoadMoreText() {
+        return textLoadMore;
+      }
 
+    });
 })();

@@ -13,7 +13,7 @@ describe('Autocomplete Config Factory', function() {
   it('should be able to update and retrieve Searching text', function() {
     // Arrange
     var text = 'randomtext';
-    
+
     // Act
     ckAutocompleteConfig.setSearchingText(text);
 
@@ -24,7 +24,7 @@ describe('Autocomplete Config Factory', function() {
   it('should be able to update and retrieve No Results text', function() {
     // Arrange
     var text = 'randomtext';
-    
+
     // Act
     ckAutocompleteConfig.setNoResultsText(text);
 
@@ -35,7 +35,7 @@ describe('Autocomplete Config Factory', function() {
   it('should be able to update and retrieve Lod More text', function() {
     // Arrange
     var text = 'randomtext';
-    
+
     // Act
     ckAutocompleteConfig.setLoadMoreText(text);
 

@@ -2,14 +2,8 @@
 
 describe('Autocomplete component', function() {
 
-  var $componentController;
-
-  var $q, $rootScope, $scope, $timeout, $element;
-
-  var mockWithoutFilter = function() {
-    return [{ id: 'id2', name: 'name2' }];
-  };
-  var translateSpy, withoutSpy, elementSpy;
+  var $componentController, $q, $rootScope, $scope, $timeout, $element;
+  var translateSpy, withoutSpy, elementSpy, mockElement;
 
   beforeEach(module('ck-autocomplete'));
 
@@ -17,20 +11,22 @@ describe('Autocomplete component', function() {
     translateSpy = jasmine.createSpy('translateFilter').and.callFake(function(text) {
       return text;
     });
+
     withoutSpy = jasmine.createSpy('withoutFilter').and.callFake(function() {
       return [{ id: 'id2', name: 'name2' }];
     });
-    element = [{
-      querySelector: function(a) {
+
+    mockElement = [{
+      querySelector: jasmine.createSpy('querySelector').and.callFake(function(a) {
         return {style: {top: 0, height: 0}};
-      },
-      getBoundingClientRect: function() {
+      }),
+      getBoundingClientRect: jasmine.createSpy('getBoundingClientRect').and.callFake(function() {
         return {top: 0, bottom: 0};
-      }
+      })
     }];
 
-    $provide.value('withoutFilter', withoutSpy );
-    $provide.value('$element', element);
+    $provide.value('withoutFilter', withoutSpy);
+    $provide.value('$element', mockElement);
   }));
 
   beforeEach(inject(function(_$componentController_, _$q_, _$rootScope_, _$timeout_) {
@@ -68,6 +64,9 @@ describe('Autocomplete component', function() {
     expect(ctrl.clearSelected).toBeUndefined();
     expect(ctrl.onSelected).toBeUndefined();
     expect(ctrl.useCache).toBe(true);
+    expect(ctrl.onFocusIn).toBeDefined();
+    expect(ctrl.positionTimer).toBeNull();
+    expect(ctrl.positionTimeout).toBe(100);
   });
 
   it('should allow override of parameters through component API', function() {
@@ -95,7 +94,7 @@ describe('Autocomplete component', function() {
     expect(translateSpy).not.toHaveBeenCalled();
   });
 
-  it('should fetch entity if model and findById are provided', function (){
+  it('should fetch entity if model and findById are provided', function() {
     // Arrange
     var model = 'someid';
     var entity = { id: 'someid', name: 'somename' };
@@ -112,10 +111,10 @@ describe('Autocomplete component', function() {
     expect(ctrl.initialDisplay).toBe('somename');
   });
 
-  it('should call the given onSearch function when searching', function (done) {
+  it('should call the given onSearch function when searching', function(done) {
     // Arrange
     var model = {};
-    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }] ;
+    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }];
     var onSearch = jasmine.createSpy('onSearch').and.returnValue($q.resolve(entities));
 
     var bindings = { model: model, onSearch: onSearch };
@@ -132,7 +131,7 @@ describe('Autocomplete component', function() {
     $rootScope.$digest();
   });
 
-  it('should remove last element when we get more than the specified limit', function (done) {
+  it('should remove last element when we get more than the specified limit', function(done) {
     // Arrange
     var model = {};
     var entities = [
@@ -150,10 +149,9 @@ describe('Autocomplete component', function() {
       { id: 'id12', name: 'name12' },
       { id: 'id13', name: 'name13' },
       { id: 'id14', name: 'name14' },
-      { id: 'id15', name: 'name15' },
-      ];
+      { id: 'id15', name: 'name15' }
+    ];
     var onSearch = jasmine.createSpy('onSearch').and.returnValue($q.resolve(entities));
-
     var bindings = { model: model, onSearch: onSearch };
 
     // Act
@@ -169,10 +167,10 @@ describe('Autocomplete component', function() {
     $rootScope.$digest();
   });
 
-  it('should cache the results of a particular query', function (done) {
+  it('should cache the results of a particular query', function(done) {
     // Arrange
     var model = {};
-    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }] ;
+    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }];
     var onSearch = jasmine.createSpy('onSearch').and.returnValue($q.resolve(entities));
 
     var bindings = { model: model, onSearch: onSearch };
@@ -189,10 +187,10 @@ describe('Autocomplete component', function() {
     $rootScope.$digest();
   });
 
-  it('should use the cache when searching a previous query', function (done) {
+  it('should use the cache when searching a previous query', function(done) {
     // Arrange
     var model = {};
-    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }] ;
+    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }];
     var onSearch = jasmine.createSpy('onSearch').and.returnValue($q.resolve(entities));
 
     var bindings = { model: model, onSearch: onSearch };
@@ -211,11 +209,11 @@ describe('Autocomplete component', function() {
     $rootScope.$digest();
   });
 
-  it('should not use the cache when useCache is set to false', function (done) {
+  it('should not use the cache when useCache is set to false', function(done) {
     // Arrange
     var model = {};
-    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }] ;
-    var entities2 = [{ id: 'id3', name: 'name3' }, { id: 'id4', name: 'name4' }] ;
+    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }];
+    var entities2 = [{ id: 'id3', name: 'name3' }, { id: 'id4', name: 'name4' }];
     var onSearch = jasmine.createSpy('onSearch').and.returnValues($q.resolve(entities), $q.resolve(entities2));
 
     var bindings = { model: model, onSearch: onSearch, useCache: false };
@@ -234,10 +232,10 @@ describe('Autocomplete component', function() {
     $rootScope.$digest();
   });
 
-  it('should escape regex special characters and perform onSearch', function (done) {
+  it('should escape regex special characters and perform onSearch', function(done) {
     // Arrange
     var model = {};
-    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }] ;
+    var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }];
     var onSearch = jasmine.createSpy('onSearch').and.returnValue($q.resolve(entities));
 
     var bindings = { model: model, onSearch: onSearch };
@@ -254,7 +252,7 @@ describe('Autocomplete component', function() {
     $rootScope.$digest();
   });
 
-  it('should exclude the contents of the exclusion list if set', function (done) {
+  it('should exclude the contents of the exclusion list if set', function(done) {
     // Arrange
     var model = {};
     var entities = [{ id: 'id1', name: 'name1' }, { id: 'id2', name: 'name2' }];
@@ -274,7 +272,7 @@ describe('Autocomplete component', function() {
     $rootScope.$digest();
   });
 
-  it('should return nothing when not selecting a list item', function () {
+  it('should return nothing when not selecting a list item', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = {};
@@ -284,11 +282,11 @@ describe('Autocomplete component', function() {
     var ctrl = $componentController('ckAutocomplete', null, bindings);
     var result = ctrl.onSelect();
 
-   // Assert
+    // Assert
     expect(result).toBeUndefined();
   });
 
-  it('should set the id field of the selected object to the model for a composed id', function () {
+  it('should set the id field of the selected object to the model for a composed id', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = {};
@@ -303,7 +301,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.model).toBe('someid');
   });
 
-  it('should set the id field of the selected object to the model for a simple id', function () {
+  it('should set the id field of the selected object to the model for a simple id', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = {};
@@ -318,7 +316,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.model).toBe('someid');
   });
 
-  it('should set the id field of the selected object to the model', function () {
+  it('should set the id field of the selected object to the model', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = {};
@@ -330,9 +328,9 @@ describe('Autocomplete component', function() {
     ctrl.onSelect(selected);
 
     // Assert
-    expect(ctrl.model).toBe(selected.originalObject);  });
+    expect(ctrl.model).toBe(selected.originalObject);});
 
-  it('should set the id field of the selected object snd call the onSelected callback', function () {
+  it('should set the id field of the selected object snd call the onSelected callback', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var onSelected = jasmine.createSpy('onSelected');
@@ -349,7 +347,7 @@ describe('Autocomplete component', function() {
     expect(onSelected).toHaveBeenCalled();
   });
 
-  it('should empty model if clearOnNoSelection is enabled and text does not match a selection item', function () {
+  it('should empty model if clearOnNoSelection is enabled and text does not match a selection item', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = 'somemodel';
@@ -363,7 +361,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.model).toBeUndefined();
   });
 
-  it('should not modify model if clearOnNoSelection is disabled and text does not match a selection item', function () {
+  it('should not modify model if clearOnNoSelection is disabled and text does not match a selection item', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = 'somemodel';
@@ -377,7 +375,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.model).toBe('somemodel');
   });
 
-  it('should not modify the model if there is still a typed term', function () {
+  it('should not modify the model if there is still a typed term', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = 'somemodel';
@@ -391,7 +389,7 @@ describe('Autocomplete component', function() {
     expect(ctrl.model).toBe('somemodel');
   });
 
-  it('should empty model if we do not enter a term', function () {
+  it('should empty model if we do not enter a term', function() {
     // Arrange
     var search = jasmine.createSpy('search');
     var model = 'somemodel';
@@ -451,11 +449,11 @@ describe('Autocomplete component', function() {
 
   it('should clear the cache when clearing the input when a broadcast to the component is received', function() {
     // Arrange
-    var search = jasmine.createSpy('search').and.returnValue($q.resolve([{ name : 'a result'}]));
+    var search = jasmine.createSpy('search').and.returnValue($q.resolve([{ name: 'a result'}]));
     var model = 'somemodel';
     var bindings = { onSearch: search, model: model };
     spyOn($scope, '$broadcast');
-    var id = "my_id";
+    var id = 'my_id';
 
     // Act
     var ctrl = $componentController('ckAutocomplete', { $scope: $scope }, bindings);
@@ -477,7 +475,7 @@ describe('Autocomplete component', function() {
     var model = 'somemodel';
     var bindings = { onSearch: search, model: model };
     spyOn($scope, '$broadcast');
-    var id = "my_id";
+    var id = 'my_id';
 
     // Act
     var ctrl = $componentController('ckAutocomplete', { $scope: $scope }, bindings);
