@@ -38,9 +38,10 @@
 
     });
 
-  autocompleteController.$inject = ['$element', '$filter', '$scope', '$q', '$timeout', 'ckAutocompleteConfig'];
+  autocompleteController.$inject = ['$window', '$element', '$filter', '$scope', '$q', '$timeout',
+    'ckAutocompleteConfig'];
 
-  function autocompleteController($element, $filter, $scope, $q, $timeout, ckAutocompleteConfig) {
+  function autocompleteController($window, $element, $filter, $scope, $q, $timeout, ckAutocompleteConfig) {
     var self = this;
 
     // Set up default values
@@ -225,8 +226,8 @@
      * above the input field. If the dropdown can not all be displayed in the top it is moved down over the input field
      */
     function setDropDownPosition() {
-      var docTop = document.documentElement.clientTop + window.pageYOffset + 125,
-        docBottom = docTop + document.documentElement.clientHeight - 125 - 50,
+      var docTop = $window.pageYOffset + 125,
+        docBottom = docTop + $window.innerHeight - 125 - 50,
         fieldTop = $element[0].getBoundingClientRect().top,
         fieldBottom = $element[0].getBoundingClientRect().bottom,
         dropDown = $element[0].querySelector('.angucomplete-dropdown'),
