@@ -39,9 +39,9 @@
 
   });
 
-  autocompleteController.$inject = ['$element', '$filter', '$scope', '$q', '$timeout', 'ckAutocompleteConfig'];
+  autocompleteController.$inject = ['$window', '$element', '$filter', '$scope', '$q', '$timeout', 'ckAutocompleteConfig'];
 
-  function autocompleteController($element, $filter, $scope, $q, $timeout, ckAutocompleteConfig) {
+  function autocompleteController($window, $element, $filter, $scope, $q, $timeout, ckAutocompleteConfig) {
     var self = this;
 
     // Set up default values
@@ -226,8 +226,8 @@
      * above the input field. If the dropdown can not all be displayed in the top it is moved down over the input field
      */
     function setDropDownPosition() {
-      var docTop = document.documentElement.clientTop + window.pageYOffset + 125,
-          docBottom = docTop + document.documentElement.clientHeight - 125 - 50,
+      var docTop = $window.pageYOffset + 125,
+          docBottom = docTop + $window.innerHeight - 125 - 50,
           fieldTop = $element[0].getBoundingClientRect().top,
           fieldBottom = $element[0].getBoundingClientRect().bottom,
           dropDown = $element[0].querySelector('.angucomplete-dropdown'),
@@ -302,46 +302,46 @@
   }
 })();
 (function () {
-    'use strict';
+  'use strict';
 
-    angular.module('ck-autocomplete').factory('ckAutocompleteConfig', function () {
-        var textSearching = 'Searching...';
-        var textNoResults = 'No results';
-        var textLoadMore = 'Too many results. Please narrow search';
+  angular.module('ck-autocomplete').factory('ckAutocompleteConfig', function () {
+    var textSearching = 'Searching...';
+    var textNoResults = 'No results';
+    var textLoadMore = 'Too many results. Please narrow search';
 
-        return {
-            setSearchingText: setSearchingText,
-            setNoResultsText: setNoResultsText,
-            setLoadMoreText: setLoadMoreText,
-            getSearchingText: getSearchingText,
-            getNoResultsText: getNoResultsText,
-            getLoadMoreText: getLoadMoreText
-        };
+    return {
+      setSearchingText: setSearchingText,
+      setNoResultsText: setNoResultsText,
+      setLoadMoreText: setLoadMoreText,
+      getSearchingText: getSearchingText,
+      getNoResultsText: getNoResultsText,
+      getLoadMoreText: getLoadMoreText
+    };
 
-        function setSearchingText(text) {
-            textSearching = text;
-        };
+    function setSearchingText(text) {
+      textSearching = text;
+    }
 
-        function setNoResultsText(text) {
-            textNoResults = text;
-        };
+    function setNoResultsText(text) {
+      textNoResults = text;
+    }
 
-        function setLoadMoreText(text) {
-            textLoadMore = text;
-        };
+    function setLoadMoreText(text) {
+      textLoadMore = text;
+    }
 
-        function getSearchingText() {
-            return textSearching;
-        };
+    function getSearchingText() {
+      return textSearching;
+    }
 
-        function getNoResultsText() {
-            return textNoResults;
-        };
+    function getNoResultsText() {
+      return textNoResults;
+    }
 
-        function getLoadMoreText() {
-            return textLoadMore;
-        };
-    });
+    function getLoadMoreText() {
+      return textLoadMore;
+    }
+  });
 })();
 angular.module('ck-autocomplete').run(['$templateCache', function ($templateCache) {
     $templateCache.put('autocomplete.list.tpl.html', "<div class=\"angucomplete-holder\" ng-class=\"{'angucomplete-dropdown-visible': showDropdown}\">\n    <input id=\"{{id}}_value\" name=\"{{inputName}}\" tabindex=\"{{fieldTabindex}}\"\n           ng-class=\"{'angucomplete-input-not-empty': notEmpty}\" ng-model=\"searchStr\" ng-disabled=\"disableInput\"\n           type=\"{{inputType}}\" placeholder=\"{{placeholder}}\" maxlength=\"{{maxlength}}\" ng-focus=\"onFocusHandler()\"\n           class=\"{{inputClass}}\" ng-focus=\"resetHideResults()\" ng-blur=\"hideResults($event)\" autocapitalize=\"off\"\n           autocorrect=\"off\" autocomplete=\"off\" ng-change=\"inputChangeHandler(searchStr)\"/>\n\n    <div id=\"{{id}}_dropdown\" class=\"angucomplete-dropdown\" ng-show=\"showDropdown\">\n\n        <div class=\"angucomplete-searching\" ng-show=\"searching\" ng-bind=\"textSearching\"></div>\n        <div class=\"angucomplete-searching\" ng-show=\"!searching && (!results || results.length == 0)\"\n             ng-bind=\"textNoResults\"></div>\n\n            <div class=\"angucomplete-loadmore\" disabled ng-show=\"!searching && $parent.loadMore\">\n                {{ $parent.textLoadMore }}\n            </div>\n\n        <div class=\"angucomplete-row\" ng-repeat=\"result in results\" ng-click=\"selectResult(result)\"\n             ng-mouseenter=\"hoverRow($index)\" ng-class=\"{'angucomplete-selected-row': $index == currentIndex}\">\n\n            <div class=\"angucomplete-title\" ng-if=\"matchClass\" ng-bind-html=\"result.title\"></div>\n            <div class=\"angucomplete-title\" ng-if=\"!matchClass\">{{ result.title }}</div>\n\n            <div ng-if=\"matchClass && result.description && result.description != ''\" class=\"angucomplete-description\"\n                 ng-bind-html=\"result.description\"></div>\n            <div ng-if=\"!matchClass && result.description && result.description != ''\" class=\"angucomplete-description\">\n                {{result.description}}\n            </div>\n\n        </div>\n    </div>\n</div>");
