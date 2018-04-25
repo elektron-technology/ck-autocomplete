@@ -223,7 +223,8 @@
     /**
      * @function setDropDownPosition
      * Set the location of the dropdown. If there is not enough space at the bottom of the page the height will be set
-     * above the input field. If the dropdown can not all be displayed in the top it is moved down over the input field
+     * above the input field. If the dropdown can not all be displayed in the top it is moved either above or below the
+     * field, and resized to fit in the remaining space depending on where there in the most space
      */
     function setDropDownPosition() {
       var docTop = $window.pageYOffset + 125,
