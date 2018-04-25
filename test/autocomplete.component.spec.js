@@ -16,7 +16,7 @@ describe('Autocomplete component', function() {
       return [{ id: 'id2', name: 'name2' }];
     });
 
-    elementRect = {left:0, top: 50, right: 100, bottom: 70};
+    elementRect = {left: 0, top: 50, right: 100, bottom: 70};
     mockWindow = {pageYOffset: 0, innerHeight: 300};
 
     queriedElement = {
@@ -544,7 +544,7 @@ describe('Autocomplete component', function() {
 
     // Set the document and window extents. The field fits well within the page
     // (height of dropdown si 200px)
-    elementRect = {left:0, top: 50, right: 100, bottom: 70};
+    elementRect = {left: 0, top: 50, right: 100, bottom: 70};
     mockWindow.innerHieght = 1000;
 
     // Act
@@ -555,8 +555,8 @@ describe('Autocomplete component', function() {
     // Assert
     expect(mockElement[0].querySelector).toHaveBeenCalled();
     expect(queriedElement.getBoundingClientRect).toHaveBeenCalled();
-    expect(queriedElement.style.height).toBeNull;
-    expect(queriedElement.style.top).toBeNull;
+    expect(queriedElement.style.height).toBeNull; // No modification expected
+    expect(queriedElement.style.top).toBeNull; // No modification expected
   });
 
   it('should set the top, but not change the height if the dropdown fits in the page above the field', function() {
@@ -567,7 +567,7 @@ describe('Autocomplete component', function() {
 
     // Set the document and window extents. The field does not fits in the bottom of the page
     // (height of dropdown si 200px)
-    elementRect = {left:0, top: 450, right: 100, bottom: 470};
+    elementRect = {left: 0, top: 450, right: 100, bottom: 470};
     mockWindow.innerHeight = 500;
 
     // Act
@@ -578,7 +578,7 @@ describe('Autocomplete component', function() {
     // Assert
     expect(mockElement[0].querySelector).toHaveBeenCalled();
     expect(queriedElement.getBoundingClientRect).toHaveBeenCalled();
-    expect(queriedElement.style.height).toBeNull;       // Height of dropdown is unmodified
+    expect(queriedElement.style.height).toBeNull; // Height of dropdown is unmodified
     expect(queriedElement.style.top).toEqual('-194px'); // Offset is relative to element less 6
   });
 
@@ -591,7 +591,7 @@ describe('Autocomplete component', function() {
     // Set the document and window extents. The dropdown does not fit the page. There is slightly more room at
     // the top of the page than at the bottom, so the drop down should move to the top
     // (height of dropdown si 200px)
-    elementRect = {left:0, top: 150, right: 100, bottom: 170};
+    elementRect = {left: 0, top: 150, right: 100, bottom: 170};
     mockWindow.innerHeight = 200;
 
     // Act
@@ -602,8 +602,8 @@ describe('Autocomplete component', function() {
     // Assert
     expect(mockElement[0].querySelector).toHaveBeenCalled();
     expect(queriedElement.getBoundingClientRect).toHaveBeenCalled();
-    expect(queriedElement.style.height).toEqual('17px'); // Height pf dropdown
-    expect(queriedElement.style.top).toEqual('-11px');   // Offset is relative to element
+    expect(queriedElement.style.height).toEqual('17px'); // Height of dropdown
+    expect(queriedElement.style.top).toEqual('-11px'); // Offset is relative to element
   });
 
   it('should not set the top, but change the height if the dropdown does not below the field', function() {
@@ -615,7 +615,7 @@ describe('Autocomplete component', function() {
     // Set the document and window extents. The dropdown does not fit the page. There is slightly more room at
     // the bottom of the page than at the top, so the drop down should remain where it is but have the height modified
     // (height of dropdown si 200px)
-    elementRect = {left:0, top: 150, right: 100, bottom: 170};
+    elementRect = {left: 0, top: 150, right: 100, bottom: 170};
     mockWindow.innerHeight = 250;
 
     // Act
@@ -626,7 +626,7 @@ describe('Autocomplete component', function() {
     // Assert
     expect(mockElement[0].querySelector).toHaveBeenCalled();
     expect(queriedElement.getBoundingClientRect).toHaveBeenCalled();
-    expect(queriedElement.style.height).toEqual('30px');  // Height pf drop down
-    expect(queriedElement.style.top).toBeNull();          // Offset is relative to element
+    expect(queriedElement.style.height).toEqual('30px'); // Height of drop down
+    expect(queriedElement.style.top).toBeNull(); // Offset is relative to element
   });
 });
