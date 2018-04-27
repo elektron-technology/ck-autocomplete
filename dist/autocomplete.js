@@ -1,5 +1,5 @@
 /**
- * @checkit/ck-autocomplete v1.0.9 (https://github.com/elektron-technology/ck-autocomplete)
+ * @checkit/ck-autocomplete v1.0.10 (https://github.com/elektron-technology/ck-autocomplete)
  * Copyright 2018 Application Team (checkit.net)
  * Licensed under MIT
  */
@@ -39,9 +39,9 @@
 
   });
 
-  autocompleteController.$inject = ['$filter', '$scope', '$q', '$timeout', 'ckAutocompleteConfig'];
+  autocompleteController.$inject = ['$window', '$element', '$filter', '$scope', '$q', '$timeout', 'ckAutocompleteConfig'];
 
-  function autocompleteController($filter, $scope, $q, $timeout, ckAutocompleteConfig) {
+  function autocompleteController($window, $element, $filter, $scope, $q, $timeout, ckAutocompleteConfig) {
     var self = this;
 
     // Set up default values
@@ -74,6 +74,10 @@
     self.onSelect = onSelect;
     self.onChange = onChange;
     self.onFocusOut = onFocusOut;
+    self.onFocusIn = onFocusIn;
+    // The position timer is required to allow angucomplete to finish any digest cycles when data is returned
+    self.positionTimer = null;
+    self.positionTimeout = 100;
 
     $scope.$on('ck-autocomplete:clearInput', function (event, id) {
       clearInput(id);
@@ -130,6 +134,14 @@
         } else {
           $scope.loadMore = false;
         }
+
+        // When the drop down is initially displayed the height is indeterminate. It will be calculated once the result
+        // set has been returned. The dropdown box position can then be determined
+        if (self.positionTimer) {
+          $timeout.cancel(self.positionTimer);
+        }
+        self.positionTimer = $timeout(setDropDownPosition, self.positionTimeout);
+
         return results;
       });
     }
@@ -181,6 +193,73 @@
       if (self.clearOnNoSelection && !self.model) {
         clearInput();
       }
+      resetDropDownPostion();
+    }
+
+    /**
+     * Check for drop down position when the element gets focus
+     */
+    function onFocusIn() {
+      resetDropDownPostion();
+
+      if (self.positionTimer) {
+        $timeout.cancel(self.positionTimer);
+      }
+      // Allow plenty of time for the backend to respond to a request before firing
+      self.positionTimer = $timeout(setDropDownPosition, self.positionTimeout * 10);
+    }
+
+    /**
+     * @function resetDropDownPosition
+     * Reset the drop down position of the box to under the input field
+     */
+    function resetDropDownPostion() {
+      var dropDown = $element[0].querySelector('.angucomplete-dropdown');
+
+      dropDown.style.top = null;
+      dropDown.style.height = null;
+    }
+
+    /**
+     * @function setDropDownPosition
+     * Set the location of the dropdown. If there is not enough space at the bottom of the page the height will be set
+     * above the input field. If the dropdown can not all be displayed in the top it is moved down over the input field
+     */
+    function setDropDownPosition() {
+      var docTop = $window.pageYOffset + 125,
+          docBottom = docTop + $window.innerHeight - 125 - 50,
+          fieldTop = $element[0].getBoundingClientRect().top,
+          fieldBottom = $element[0].getBoundingClientRect().bottom,
+          dropDown = $element[0].querySelector('.angucomplete-dropdown'),
+          dropDownTop = dropDown.getBoundingClientRect().height - 6;
+
+      resetDropDownPostion();
+
+      if (self.positionTimer) {
+        $timeout.cancel(self.positionTimer);
+        self.positionTimer = null;
+      }
+
+      // Check that there is enough space at the bottom of the page
+      if (docBottom < fieldBottom + dropDownTop) {
+        // If no space at bottom move the dropdown list to the top
+        dropDown.style.top = (-dropDownTop).toString() + 'px';
+
+        // Prevent top disappearing into menu area
+        if (fieldTop - dropDownTop < docTop) {
+          // Resize component to fit and move accordingly
+          var spaceAtTop = Math.abs(fieldTop - docTop),
+              spaceAtBottom = Math.abs(docBottom - fieldBottom);
+
+          if (spaceAtTop > spaceAtBottom) {
+            dropDown.style.top = (-(spaceAtTop - 14)).toString() + 'px';
+            dropDown.style.height = (spaceAtTop - 8).toString() + 'px';
+          } else {
+            dropDown.style.top = null;
+            dropDown.style.height = spaceAtBottom.toString() + 'px';
+          }
+        }
+      }
     }
 
     /**
@@ -219,56 +298,56 @@
         }
       }
       return object;
-    };
+    }
   }
 })();
 (function () {
-    'use strict';
+  'use strict';
 
-    angular.module('ck-autocomplete').factory('ckAutocompleteConfig', function () {
-        var textSearching = 'Searching...';
-        var textNoResults = 'No results';
-        var textLoadMore = 'Too many results. Please narrow search';
+  angular.module('ck-autocomplete').factory('ckAutocompleteConfig', function () {
+    var textSearching = 'Searching...';
+    var textNoResults = 'No results';
+    var textLoadMore = 'Too many results. Please narrow search';
 
-        return {
-            setSearchingText: setSearchingText,
-            setNoResultsText: setNoResultsText,
-            setLoadMoreText: setLoadMoreText,
-            getSearchingText: getSearchingText,
-            getNoResultsText: getNoResultsText,
-            getLoadMoreText: getLoadMoreText
-        };
+    return {
+      setSearchingText: setSearchingText,
+      setNoResultsText: setNoResultsText,
+      setLoadMoreText: setLoadMoreText,
+      getSearchingText: getSearchingText,
+      getNoResultsText: getNoResultsText,
+      getLoadMoreText: getLoadMoreText
+    };
 
-        function setSearchingText(text) {
-            textSearching = text;
-        };
+    function setSearchingText(text) {
+      textSearching = text;
+    }
 
-        function setNoResultsText(text) {
-            textNoResults = text;
-        };
+    function setNoResultsText(text) {
+      textNoResults = text;
+    }
 
-        function setLoadMoreText(text) {
-            textLoadMore = text;
-        };
+    function setLoadMoreText(text) {
+      textLoadMore = text;
+    }
 
-        function getSearchingText() {
-            return textSearching;
-        };
+    function getSearchingText() {
+      return textSearching;
+    }
 
-        function getNoResultsText() {
-            return textNoResults;
-        };
+    function getNoResultsText() {
+      return textNoResults;
+    }
 
-        function getLoadMoreText() {
-            return textLoadMore;
-        };
-    });
+    function getLoadMoreText() {
+      return textLoadMore;
+    }
+  });
 })();
 angular.module('ck-autocomplete').run(['$templateCache', function ($templateCache) {
     $templateCache.put('autocomplete.list.tpl.html', "<div class=\"angucomplete-holder\" ng-class=\"{'angucomplete-dropdown-visible': showDropdown}\">\n    <input id=\"{{id}}_value\" name=\"{{inputName}}\" tabindex=\"{{fieldTabindex}}\"\n           ng-class=\"{'angucomplete-input-not-empty': notEmpty}\" ng-model=\"searchStr\" ng-disabled=\"disableInput\"\n           type=\"{{inputType}}\" placeholder=\"{{placeholder}}\" maxlength=\"{{maxlength}}\" ng-focus=\"onFocusHandler()\"\n           class=\"{{inputClass}}\" ng-focus=\"resetHideResults()\" ng-blur=\"hideResults($event)\" autocapitalize=\"off\"\n           autocorrect=\"off\" autocomplete=\"off\" ng-change=\"inputChangeHandler(searchStr)\"/>\n\n    <div id=\"{{id}}_dropdown\" class=\"angucomplete-dropdown\" ng-show=\"showDropdown\">\n\n        <div class=\"angucomplete-searching\" ng-show=\"searching\" ng-bind=\"textSearching\"></div>\n        <div class=\"angucomplete-searching\" ng-show=\"!searching && (!results || results.length == 0)\"\n             ng-bind=\"textNoResults\"></div>\n\n            <div class=\"angucomplete-loadmore\" disabled ng-show=\"!searching && $parent.loadMore\">\n                {{ $parent.textLoadMore }}\n            </div>\n\n        <div class=\"angucomplete-row\" ng-repeat=\"result in results\" ng-click=\"selectResult(result)\"\n             ng-mouseenter=\"hoverRow($index)\" ng-class=\"{'angucomplete-selected-row': $index == currentIndex}\">\n\n            <div class=\"angucomplete-title\" ng-if=\"matchClass\" ng-bind-html=\"result.title\"></div>\n            <div class=\"angucomplete-title\" ng-if=\"!matchClass\">{{ result.title }}</div>\n\n            <div ng-if=\"matchClass && result.description && result.description != ''\" class=\"angucomplete-description\"\n                 ng-bind-html=\"result.description\"></div>\n            <div ng-if=\"!matchClass && result.description && result.description != ''\" class=\"angucomplete-description\">\n                {{result.description}}\n            </div>\n\n        </div>\n    </div>\n</div>");
 }]);
 angular.module('ck-autocomplete').run(['$templateCache', function ($templateCache) {
-    $templateCache.put('autocomplete.tpl.html', "<span class=\"autocomplete\" angucomplete-alt\n    type=\"search\"\n    ng-attr-id=\"{{ $ctrl.elementId || undefined }}\"\n    placeholder=\"{{ $ctrl.placeholder }}\"\n    minlength=\"{{ $ctrl.minLength }}\"\n    text-searching=\"{{ $ctrl.textSearching }}\"\n    text-no-results=\"{{ $ctrl.textNoResults }}\"\n    template-url=\"autocomplete.list.tpl.html\"\n\n    remote-api-handler=\"$ctrl.search\"\n    title-field=\"{{ $ctrl.displayField }}\"\n    description-field=\"{{$ctrl.descriptionField}}\"\n    initial-value=\"$ctrl.initialDisplay\"\n\n    input-class=\"{{$ctrl.listClass}}\"\n    match-class=\"angucomplete-highlight\"\n    disable-input=\"$ctrl.disableInput\"\n\n    selected-object=\"$ctrl.onSelect\"\n    input-changed=\"$ctrl.onChange\"\n    clear-selected=\"{{ $ctrl.clearSelected }}\"\n\n    focus-out=\"$ctrl.onFocusOut()\">\n</span>\n");
+    $templateCache.put('autocomplete.tpl.html', "<span class=\"autocomplete\" angucomplete-alt\n    type=\"search\"\n    ng-attr-id=\"{{ $ctrl.elementId || undefined }}\"\n    placeholder=\"{{ $ctrl.placeholder }}\"\n    minlength=\"{{ $ctrl.minLength }}\"\n    text-searching=\"{{ $ctrl.textSearching }}\"\n    text-no-results=\"{{ $ctrl.textNoResults }}\"\n    template-url=\"autocomplete.list.tpl.html\"\n\n    remote-api-handler=\"$ctrl.search\"\n    title-field=\"{{ $ctrl.displayField }}\"\n    description-field=\"{{$ctrl.descriptionField}}\"\n    initial-value=\"$ctrl.initialDisplay\"\n\n    input-class=\"{{$ctrl.listClass}}\"\n    match-class=\"angucomplete-highlight\"\n    disable-input=\"$ctrl.disableInput\"\n\n    selected-object=\"$ctrl.onSelect\"\n    input-changed=\"$ctrl.onChange\"\n    clear-selected=\"{{ $ctrl.clearSelected }}\"\n\n    focus-out=\"$ctrl.onFocusOut()\"\n    focus-in=\"$ctrl.onFocusIn()\">\n</span>\n");
 }]);
 (function () {
   'use strict';
