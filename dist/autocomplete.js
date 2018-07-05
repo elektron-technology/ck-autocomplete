@@ -34,7 +34,10 @@
       exclusionList: '=',
       listClass: '@',
       elementId: '@', // Assign an ng-attr-id to the autocomplete element for identification,
-      useCache: '<?'
+      useCache: '<?',
+      fieldRequired: '=?',
+      fieldRequiredClass: '@?',
+      inputName: '@?'
     }
 
   });
@@ -223,7 +226,8 @@
     /**
      * @function setDropDownPosition
      * Set the location of the dropdown. If there is not enough space at the bottom of the page the height will be set
-     * above the input field. If the dropdown can not all be displayed in the top it is moved down over the input field
+     * above the input field. If the dropdown can not all be displayed in the top it is moved either above or below the
+     * field, and resized to fit in the remaining space depending on where there in the most space
      */
     function setDropDownPosition() {
       var docTop = $window.pageYOffset + 125,
@@ -347,7 +351,7 @@ angular.module('ck-autocomplete').run(['$templateCache', function ($templateCach
     $templateCache.put('autocomplete.list.tpl.html', "<div class=\"angucomplete-holder\" ng-class=\"{'angucomplete-dropdown-visible': showDropdown}\">\n    <input id=\"{{id}}_value\" name=\"{{inputName}}\" tabindex=\"{{fieldTabindex}}\"\n           ng-class=\"{'angucomplete-input-not-empty': notEmpty}\" ng-model=\"searchStr\" ng-disabled=\"disableInput\"\n           type=\"{{inputType}}\" placeholder=\"{{placeholder}}\" maxlength=\"{{maxlength}}\" ng-focus=\"onFocusHandler()\"\n           class=\"{{inputClass}}\" ng-focus=\"resetHideResults()\" ng-blur=\"hideResults($event)\" autocapitalize=\"off\"\n           autocorrect=\"off\" autocomplete=\"off\" ng-change=\"inputChangeHandler(searchStr)\"/>\n\n    <div id=\"{{id}}_dropdown\" class=\"angucomplete-dropdown\" ng-show=\"showDropdown\">\n\n        <div class=\"angucomplete-searching\" ng-show=\"searching\" ng-bind=\"textSearching\"></div>\n        <div class=\"angucomplete-searching\" ng-show=\"!searching && (!results || results.length == 0)\"\n             ng-bind=\"textNoResults\"></div>\n\n            <div class=\"angucomplete-loadmore\" disabled ng-show=\"!searching && $parent.loadMore\">\n                {{ $parent.textLoadMore }}\n            </div>\n\n        <div class=\"angucomplete-row\" ng-repeat=\"result in results\" ng-click=\"selectResult(result)\"\n             ng-mouseenter=\"hoverRow($index)\" ng-class=\"{'angucomplete-selected-row': $index == currentIndex}\">\n\n            <div class=\"angucomplete-title\" ng-if=\"matchClass\" ng-bind-html=\"result.title\"></div>\n            <div class=\"angucomplete-title\" ng-if=\"!matchClass\">{{ result.title }}</div>\n\n            <div ng-if=\"matchClass && result.description && result.description != ''\" class=\"angucomplete-description\"\n                 ng-bind-html=\"result.description\"></div>\n            <div ng-if=\"!matchClass && result.description && result.description != ''\" class=\"angucomplete-description\">\n                {{result.description}}\n            </div>\n\n        </div>\n    </div>\n</div>");
 }]);
 angular.module('ck-autocomplete').run(['$templateCache', function ($templateCache) {
-    $templateCache.put('autocomplete.tpl.html', "<span class=\"autocomplete\" angucomplete-alt\n    type=\"search\"\n    ng-attr-id=\"{{ $ctrl.elementId || undefined }}\"\n    placeholder=\"{{ $ctrl.placeholder }}\"\n    minlength=\"{{ $ctrl.minLength }}\"\n    text-searching=\"{{ $ctrl.textSearching }}\"\n    text-no-results=\"{{ $ctrl.textNoResults }}\"\n    template-url=\"autocomplete.list.tpl.html\"\n\n    remote-api-handler=\"$ctrl.search\"\n    title-field=\"{{ $ctrl.displayField }}\"\n    description-field=\"{{$ctrl.descriptionField}}\"\n    initial-value=\"$ctrl.initialDisplay\"\n\n    input-class=\"{{$ctrl.listClass}}\"\n    match-class=\"angucomplete-highlight\"\n    disable-input=\"$ctrl.disableInput\"\n\n    selected-object=\"$ctrl.onSelect\"\n    input-changed=\"$ctrl.onChange\"\n    clear-selected=\"{{ $ctrl.clearSelected }}\"\n\n    focus-out=\"$ctrl.onFocusOut()\"\n    focus-in=\"$ctrl.onFocusIn()\">\n</span>\n");
+    $templateCache.put('autocomplete.tpl.html', "<span class=\"autocomplete\" angucomplete-alt\n    type=\"search\"\n    ng-attr-id=\"{{ $ctrl.elementId || undefined }}\"\n    placeholder=\"{{ $ctrl.placeholder }}\"\n    minlength=\"{{ $ctrl.minLength }}\"\n    text-searching=\"{{ $ctrl.textSearching }}\"\n    text-no-results=\"{{ $ctrl.textNoResults }}\"\n    template-url=\"autocomplete.list.tpl.html\"\n\n    remote-api-handler=\"$ctrl.search\"\n    title-field=\"{{ $ctrl.displayField }}\"\n    description-field=\"{{$ctrl.descriptionField}}\"\n    initial-value=\"$ctrl.initialDisplay\"\n\n    input-class=\"{{$ctrl.listClass}}\"\n    match-class=\"angucomplete-highlight\"\n    disable-input=\"$ctrl.disableInput\"\n\n    selected-object=\"$ctrl.onSelect\"\n    input-changed=\"$ctrl.onChange\"\n    clear-selected=\"{{ $ctrl.clearSelected }}\"\n\n    focus-out=\"$ctrl.onFocusOut()\"\n    focus-in=\"$ctrl.onFocusIn()\"\n\n    field-required=\"$ctrl.fieldRequired\"\n    field-required-class=\"{{$ctrl.fieldRequiredClass}}\"\n    input-name=\"{{$ctrl.inputName}}\">\n</span>\n");
 }]);
 (function () {
   'use strict';

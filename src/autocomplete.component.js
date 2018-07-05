@@ -33,7 +33,10 @@
         exclusionList: '=',
         listClass: '@',
         elementId: '@', // Assign an ng-attr-id to the autocomplete element for identification,
-        useCache: '<?'
+        useCache: '<?',
+        fieldRequired: '=?',
+        fieldRequiredClass: '@?',
+        inputName: '@?'
       }
 
     });
