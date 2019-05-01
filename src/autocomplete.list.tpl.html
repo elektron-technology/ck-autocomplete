@@ -15,16 +15,13 @@
                 {{ $parent.textLoadMore }}
             </div>
 
-        <div class="angucomplete-row" ng-repeat="result in results" ng-click="selectResult(result)"
-             ng-mouseenter="hoverRow($index)" ng-class="{'angucomplete-selected-row': $index == currentIndex}">
+            <div class="angucomplete-row" ng-repeat="result in results" ng-click="selectResult(result)"
+                 ng-mouseenter="hoverRow($index)" ng-class="{'angucomplete-selected-row': $index == currentIndex}">
 
-            <div class="angucomplete-title" ng-if="matchClass" ng-bind-html="result.title"></div>
-            <div class="angucomplete-title" ng-if="!matchClass">{{ result.title }}</div>
+                <div class="angucomplete-title" ng-if="matchClass" ng-bind-html="result.title"></div>
 
-            <div ng-if="matchClass && result.description && result.description != ''" class="angucomplete-description"
-                 ng-bind-html="result.description"></div>
-            <div ng-if="!matchClass && result.description && result.description != ''" class="angucomplete-description">
-                {{result.description}}
+                <div ng-if="matchClass && result.description && result.description != ''" class="angucomplete-description"
+                     ng-bind-html="result.description"></div>
             </div>
 
         </div>
