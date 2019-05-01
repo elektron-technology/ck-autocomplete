@@ -1,5 +1,5 @@
 /**
- * @checkit/ck-autocomplete v1.0.11 (https://github.com/elektron-technology/ck-autocomplete)
+ * @checkit/ck-autocomplete v2.0.0 (https://github.com/elektron-technology/ck-autocomplete)
  * Copyright 2019 Application Team (checkit.net)
  * Licensed under MIT
  */
