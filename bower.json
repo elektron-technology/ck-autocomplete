@@ -23,7 +23,7 @@
     "tests"
   ],
   "dependencies": {
-    "angucomplete-alt": "^3.0.0",
+    "angucomplete-alt": "https://github.com/elektron-technology/angucomplete-alt.git#5af369f48550d2adf7a9d3ef2f7527e37bd8965e",
     "angular": "~1.5.11"
   },
   "devDependencies": {
