@@ -3,7 +3,7 @@
          ng-class="{'angucomplete-input-not-empty': notEmpty}" ng-model="searchStr" ng-disabled="disableInput"
          type="{{inputType}}" placeholder="{{placeholder}}" maxlength="{{maxlength}}" ng-focus="onFocusHandler()"
          class="{{inputClass}}" ng-focus="resetHideResults()" ng-blur="hideResults($event)" autocapitalize="off"
-         autocorrect="off" autocomplete="off" ng-change="inputChangeHandler(searchStr)"/>
+         autocorrect="off" autocomplete="nope" ng-change="inputChangeHandler(searchStr)"/>
 
   <div id="{{id}}_dropdown" class="angucomplete-dropdown" ng-show="showDropdown">
 
