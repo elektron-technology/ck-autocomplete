@@ -10,6 +10,7 @@ const rename = require('gulp-rename');
 const header = require('gulp-header');
 const minifyCSS = require('gulp-minify-css');
 const templateCache = require('gulp-angular-templatecache');
+const sourcemaps = require('gulp-sourcemaps');
 
 const del = require('del');
 const karma = require('karma').Server;
@@ -66,18 +67,24 @@ gulp.task('convert-and-concat', function() {
   return gulp.src([
     `${PATH.TEMP}/**/*.js`
   ])
-    .pipe(babel())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(babel({
+      comments: false
+    }))
     .pipe(concat(filename + '.js'))
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest(PATH.DIST));
 });
 
 gulp.task('uglify', function() {
   return gulp.src(PATH.DIST + filename + '.js')
+    .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(uglify()).on('error', handleErr)
     .pipe(rename({
       basename: filename,
       suffix: '.min'
     }))
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest(PATH.DIST));
 });
 
