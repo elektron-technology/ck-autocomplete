@@ -9,7 +9,7 @@
       $compileProvider.preAssignBindingsEnabled(true);
     })
     .component('ckAutocomplete', {
-      templateUrl: 'autocomplete.tpl.html',
+      templateUrl: '/autocomplete.tpl.html',
       controller: autocompleteController,
       bindings: {
         model: '=', // Property to leave idField of the selection
