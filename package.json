@@ -15,6 +15,9 @@
     "test": "tests"
   },
   "scripts": {
+    "preinstall": "npm run co:login",
+    "prepare": "npm run co:login",
+    "co:login": "aws codeartifact login --tool npm --repository checkit-artifact-repo --domain repo --domain-owner 629809936211 --region eu-west-1",
     "test": "gulp test"
   },
   "keywords": [
