@@ -1,0 +1,8 @@
+on: [push]
+
+name: Datadog Static Analysis
+
+jobs:
+  static-analysis:
+    uses: elektron-technology/github-actions-common/.github/workflows/datadog-static-analysis.yml@v1.0.1
+    secrets: inherit
